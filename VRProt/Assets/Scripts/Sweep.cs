@@ -21,34 +21,52 @@ public class Sweep : MonoBehaviour {
 
     private float angle; // Angle between mouse first pressed position and current position
     private float velocity; // Speed of the mouse after being pressed
+
+    public SteamVR_Input_Sources thisHand;
+    private SteamVR_TrackedObject trackedObjectRight;
+    private SteamVR_TrackedObject trackedObjectLeft;
+
+    private Vector3 startTransform;
+    private Vector3 currentTransform;
     
     private Vector3 startPosition; // Starting position of the mouse when pressed (LMB)
     private Vector3 distance; // Distance travelled after mouse left click pressed
     private Vector3 mouseDelta; // Current mouse position
 
     private Quaternion direction; // Rotation of the spawned beam
-
+    
     private bool isPressed = false; // Boolean checking whether LMB is pressed  
 
     // Use this for initialization
     void Start ()
     {
         audioSource = GetComponent<AudioSource>();
+
 	}
 	
 	// Update is called once per frame
 	void Update ()
     {
+        /* Vive Controller Input (hopefully) */
+        if(Input.GetButtonDown("Right Trigger"))
+        {
+            startTransform = trackedObjectRight.transform.position;
+        }
 
+        if(Input.GetButton("Right Trigger"))
+        {
+            currentTransform = trackedObjectRight.transform.position - startTransform;
+        }
 
-        if(Input.anyKeyDown)
+        /* Mouse Input */
+        if (Input.GetMouseButtonDown(0))
         {
             startPosition = Input.mousePosition; // Sets the starting mouse position after left mouse button has been pressed
 
             isPressed = true; // Set to true after LMB has been pressed
         }
 
-		if(Input.anyKey)
+		if(Input.GetMouseButton(0))
         {
             mouseDelta = Input.mousePosition - startPosition; // Calculates current mouse position each frame
             CalculateDirection(); 
