@@ -12,7 +12,7 @@ public class Sweep : MonoBehaviour {
     public float stabilizeVelocity = 0.1f; // Stabilizing value for spawned beam for it not to launch too fast
     public float offset = 0.2f;
 
-    // Getting audio
+    /* Variables for audio */
     public AudioClip[] slash;
     private AudioSource audioSource;
     private AudioClip slashClip;
@@ -21,11 +21,9 @@ public class Sweep : MonoBehaviour {
 
     private float angle; // Angle between mouse first pressed position and current position
     private float velocity; // Speed of the mouse after being pressed
-
-    public SteamVR_Input_Sources thisHand;
-    private SteamVR_TrackedObject trackedObjectRight;
-    private SteamVR_TrackedObject trackedObjectLeft;
-
+    
+    /* Variables for VR */
+    public SteamVR_TrackedObject trackedObject;
     private Vector3 startTransform;
     private Vector3 currentTransform;
     
@@ -41,21 +39,20 @@ public class Sweep : MonoBehaviour {
     void Start ()
     {
         audioSource = GetComponent<AudioSource>();
-
 	}
 	
 	// Update is called once per frame
 	void Update ()
     {
         /* Vive Controller Input (hopefully) */
-        if(Input.GetButtonDown("Right Trigger"))
+        if(Input.GetButtonDown("Right Trigger") || Input.GetButtonDown("Left Trigger"))
         {
-            startTransform = trackedObjectRight.transform.position;
+            startTransform = trackedObject.transform.position;
         }
 
-        if(Input.GetButton("Right Trigger"))
+        if(Input.GetButton("Right Trigger") || Input.GetButtonDown("Left Trigger"))
         {
-            currentTransform = trackedObjectRight.transform.position - startTransform;
+            currentTransform = trackedObject.transform.position - startTransform;
         }
 
         /* Mouse Input */
@@ -94,6 +91,9 @@ public class Sweep : MonoBehaviour {
 
         float velocityX = Mathf.Abs(Input.GetAxis("Mouse X") / Time.deltaTime);
         float velocityY = Mathf.Abs(Input.GetAxis("Mouse Y") / Time.deltaTime);
+
+        float controllerVelocityX = Mathf.Abs(currentTransform / Time.deltaTime);
+        float controllerVelocityY = 
 
         velocity = Mathf.Sqrt(Mathf.Pow(velocityX, 2) + Mathf.Pow(velocityY, 2));
 
