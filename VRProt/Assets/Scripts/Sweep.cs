@@ -55,12 +55,12 @@ public class Sweep : MonoBehaviour {
 		/* Vive Controller Input (hopefully) */
 		if (SteamVR_Input._default.inActions.GrabPinch.GetStateDown(SteamVR_Input_Sources.Any))
 		{
-			startTransform = rb.transform.position;
+			startTransform = trackedObject.transform.position;
 		}
 
 		if (SteamVR_Input._default.inActions.GrabPinch.GetState(SteamVR_Input_Sources.Any))
 		{
-			currentTransform = rb.transform.position - startTransform;
+			currentTransform = trackedObject.transform.position - startTransform;
 			CalculateDirection();
 			CalculateVelocity();
 			DistanceTraveled();
@@ -149,6 +149,15 @@ public class Sweep : MonoBehaviour {
 		//{
 		//	return;
 		//}
+
+		//Quaternion newRotation = Quaternion.identity;
+		//newRotation.x = transform.rotation.x;
+
+		//Debug.Log("newRotation.x = " + newRotation.x);
+
+		//float xEuler = (newRotation.x + 1) * 180;
+
+		//Debug.Log("xEuler: " + xEuler);
 
 		VRangle = Mathf.Atan2(currentTransform.y, currentTransform.x) * Mathf.Rad2Deg;
 
