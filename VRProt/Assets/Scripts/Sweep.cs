@@ -23,10 +23,14 @@ public class Sweep : MonoBehaviour {
     private float velocity; // Speed of the mouse after being pressed
     
     /* Variables for VR */
-    public SteamVR_TrackedObject trackedObject;
-    private Vector3 startTransform;
-    private Vector3 currentTransform;
-    
+    //public SteamVR_TrackedObject trackedObject;
+    //private Vector3 startTransform;
+    //private Vector3 currentTransform;
+    //private float objectVelocity;
+    //private float VRangle;
+    //private Quaternion VRdirection;
+    //private Vector3 VRdistance;
+
     private Vector3 startPosition; // Starting position of the mouse when pressed (LMB)
     private Vector3 distance; // Distance travelled after mouse left click pressed
     private Vector3 mouseDelta; // Current mouse position
@@ -45,15 +49,15 @@ public class Sweep : MonoBehaviour {
 	void Update ()
     {
         /* Vive Controller Input (hopefully) */
-        if(Input.GetButtonDown("Right Trigger") || Input.GetButtonDown("Left Trigger"))
-        {
-            startTransform = trackedObject.transform.position;
-        }
+        //if(Input.GetButtonDown("Right Trigger") || Input.GetButtonDown("Left Trigger"))
+        //{
+        //    startTransform = trackedObject.transform.position;
+        //}
 
-        if(Input.GetButton("Right Trigger") || Input.GetButtonDown("Left Trigger"))
-        {
-            currentTransform = trackedObject.transform.position - startTransform;
-        }
+        //if(Input.GetButton("Right Trigger") || Input.GetButton("Left Trigger"))
+        //{
+        //    currentTransform = trackedObject.transform.position - startTransform;
+        //}
 
         /* Mouse Input */
         if (Input.GetMouseButtonDown(0))
@@ -74,10 +78,12 @@ public class Sweep : MonoBehaviour {
             {
                 if (velocity >= minimumSpeed && distance.magnitude >= minimumDistanceInPixels)
                 {
+                    // Play a random slashing sound
                     int index = Random.Range(0, slash.Length);
                     slashClip = slash[index];
                     audioSource.clip = slashClip;
                     audioSource.Play();
+
                     SpawnBeam(); // Spawn a beam
                     isPressed = false; // Set it false so that beam is spawned only once after click
                 }
@@ -92,8 +98,7 @@ public class Sweep : MonoBehaviour {
         float velocityX = Mathf.Abs(Input.GetAxis("Mouse X") / Time.deltaTime);
         float velocityY = Mathf.Abs(Input.GetAxis("Mouse Y") / Time.deltaTime);
 
-        float controllerVelocityX = Mathf.Abs(currentTransform / Time.deltaTime);
-        float controllerVelocityY = 
+        //objectVelocity = trackedObject.GetComponent<Rigidbody>().velocity.magnitude; // VR part, not sure if works
 
         velocity = Mathf.Sqrt(Mathf.Pow(velocityX, 2) + Mathf.Pow(velocityY, 2));
 
@@ -117,6 +122,21 @@ public class Sweep : MonoBehaviour {
 
         direction = Quaternion.Euler(0, 0, angle - 90);
 
+        // VR part
+        //if(currentTransform. sqrMagnitude < 0.1f)
+        //{
+        //    return;
+        //}
+
+        //VRangle = Mathf.Atan2(currentTransform.y, currentTransform.x) * Mathf.Rad2Deg;
+
+        //if(VRangle < 0)
+        //{
+        //    VRangle += 360;
+        //}
+
+        //VRdirection = Quaternion.Euler(0, 0, VRangle - 90);
+
         // Debug.Log("angle = " + angle);
     }
 
@@ -126,6 +146,9 @@ public class Sweep : MonoBehaviour {
 
         distance = Input.mousePosition - startPosition;
 
+        // VR part
+        //VRdistance = trackedObject.transform.position - startTransform;
+
         // Debug.Log("The mouse traveled " + distance.magnitude + " pixels");
     }
 
@@ -133,6 +156,8 @@ public class Sweep : MonoBehaviour {
     {
         Rigidbody clone;
         clone = Instantiate(beam, transform.position + transform.forward * 2, direction); // Instantiates (spawns) a beam
+
+        //clone = Instantiate(beam, transform.position + transform.forward * (VRdistance.magnitude / 2), VRdirection); // VR part, not sure if works
 
         clone.GetComponent<Rigidbody>().velocity = velocity * transform.forward * stabilizeVelocity; // Apply force to Z axis (launches forwards)
 

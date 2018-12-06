@@ -612,7 +612,6 @@ MonoBehaviour:
   - {fileID: 8300000, guid: ce2cb9bc6bb20e44f839174581ce8765, type: 3}
   - {fileID: 8300000, guid: 077c6febf27fc984585d5f15ac102f60, type: 3}
   beam: {fileID: 1165227884}
-  trackedObject: {fileID: 0}
 --- !u!1 &556389013
 GameObject:
   m_ObjectHideFlags: 0
@@ -871,7 +870,6 @@ MonoBehaviour:
   - {fileID: 8300000, guid: ce2cb9bc6bb20e44f839174581ce8765, type: 3}
   - {fileID: 8300000, guid: 077c6febf27fc984585d5f15ac102f60, type: 3}
   beam: {fileID: 1165227884}
-  trackedObject: {fileID: 0}
 --- !u!114 &719030165
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1334,7 +1332,6 @@ MonoBehaviour:
   - {fileID: 8300000, guid: ce2cb9bc6bb20e44f839174581ce8765, type: 3}
   - {fileID: 8300000, guid: 077c6febf27fc984585d5f15ac102f60, type: 3}
   beam: {fileID: 1165227884}
-  trackedObject: {fileID: 0}
 --- !u!114 &1036987341
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6512,8 +6509,8 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1395731142}
   m_LocalRotation: {x: -0.7071068, y: 0, z: 0, w: 0.7071068}
-  m_LocalPosition: {x: 0, y: 1, z: 13.59}
-  m_LocalScale: {x: 6.8017, y: 1, z: 3.533}
+  m_LocalPosition: {x: 0, y: 1, z: 99}
+  m_LocalScale: {x: 36.021717, y: 1, z: 18.321375}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 2
