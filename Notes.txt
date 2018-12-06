@@ -1,2 +1,5 @@
-Review SteamVR_TestThrow in SteamVR/Extras to get the velocity
-Maybe change SteamVR_TrackedObject to SteamVR_Behaviour_Pose because it auto sets the position and rotation of the object
+Review SteamVR_TestThrow in SteamVR/Extras to get the velocity (DONE)
+Maybe change SteamVR_TrackedObject to SteamVR_Behaviour_Pose because it auto sets the position and rotation of the object (DONE/NOT NEEDED)
+
+distance >= 70
+velocity ~ 5

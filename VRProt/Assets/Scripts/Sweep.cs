@@ -21,17 +21,19 @@ public class Sweep : MonoBehaviour {
 
     private float angle; // Angle between mouse first pressed position and current position
     private float velocity; // Speed of the mouse after being pressed
-    
-    /* Variables for VR */
-    //public SteamVR_TrackedObject trackedObject;
-    //private Vector3 startTransform;
-    //private Vector3 currentTransform;
-    //private float objectVelocity;
-    //private float VRangle;
-    //private Quaternion VRdirection;
-    //private Vector3 VRdistance;
 
-    private Vector3 startPosition; // Starting position of the mouse when pressed (LMB)
+	/* Variables for VR */
+	public GameObject trackedObject;
+	SteamVR_Behaviour_Pose trackedObj;
+	private Vector3 startTransform;
+	private Vector3 currentTransform;
+	private float objectVelocity;
+	private float VRangle;
+	private Quaternion VRdirection;
+	private Vector3 VRdistance;
+	private Rigidbody rb;
+
+	private Vector3 startPosition; // Starting position of the mouse when pressed (LMB)
     private Vector3 distance; // Distance travelled after mouse left click pressed
     private Vector3 mouseDelta; // Current mouse position
 
@@ -43,24 +45,29 @@ public class Sweep : MonoBehaviour {
     void Start ()
     {
         audioSource = GetComponent<AudioSource>();
+		trackedObj = GetComponent<SteamVR_Behaviour_Pose>();
+		rb = GetComponent<Rigidbody>();
 	}
 	
 	// Update is called once per frame
 	void Update ()
     {
-        /* Vive Controller Input (hopefully) */
-        //if(Input.GetButtonDown("Right Trigger") || Input.GetButtonDown("Left Trigger"))
-        //{
-        //    startTransform = trackedObject.transform.position;
-        //}
+		/* Vive Controller Input (hopefully) */
+		if (SteamVR_Input._default.inActions.GrabPinch.GetStateDown(SteamVR_Input_Sources.Any))
+		{
+			startTransform = rb.transform.position;
+		}
 
-        //if(Input.GetButton("Right Trigger") || Input.GetButton("Left Trigger"))
-        //{
-        //    currentTransform = trackedObject.transform.position - startTransform;
-        //}
+		if (SteamVR_Input._default.inActions.GrabPinch.GetState(SteamVR_Input_Sources.Any))
+		{
+			currentTransform = rb.transform.position - startTransform;
+			CalculateDirection();
+			CalculateVelocity();
+			DistanceTraveled();
+		}
 
-        /* Mouse Input */
-        if (Input.GetMouseButtonDown(0))
+		/* Mouse Input */
+		if (Input.GetMouseButtonDown(0))
         {
             startPosition = Input.mousePosition; // Sets the starting mouse position after left mouse button has been pressed
 
@@ -91,21 +98,36 @@ public class Sweep : MonoBehaviour {
         }
 	}
 
-    void CalculateVelocity()
+    void CalculateVelocity() // works
     {
         /* Calculates the velocity of the mouse cursor in any direction */
 
         float velocityX = Mathf.Abs(Input.GetAxis("Mouse X") / Time.deltaTime);
         float velocityY = Mathf.Abs(Input.GetAxis("Mouse Y") / Time.deltaTime);
+		
+		velocity = Mathf.Sqrt(Mathf.Pow(velocityX, 2) + Mathf.Pow(velocityY, 2));
 
-        //objectVelocity = trackedObject.GetComponent<Rigidbody>().velocity.magnitude; // VR part, not sure if works
+		// VR part
+		//var rigidbody = GetComponent<Rigidbody>();
 
-        velocity = Mathf.Sqrt(Mathf.Pow(velocityX, 2) + Mathf.Pow(velocityY, 2));
+		var origin = trackedObj.origin ? trackedObj.origin : trackedObj.transform.parent;
+		if (origin != null)
+		{
+			rb.velocity = origin.TransformVector(trackedObj.GetVelocity());
+			rb.angularVelocity = origin.TransformVector(trackedObj.GetAngularVelocity());
+		}
+		else
+		{
+			rb.velocity = trackedObj.GetVelocity();
+			rb.angularVelocity = trackedObj.GetAngularVelocity();
+		}
 
-        // Debug.Log("velocity = " + velocity);
-    }
+		rb.maxAngularVelocity = rb.angularVelocity.magnitude;
+		
+		// Debug.Log("velocity = " + rb.maxAngularVelocity);
+	}
 
-    void CalculateDirection()
+	void CalculateDirection()
     {
         /* Calculates the angle of the mouse cursor after being pressed and dragged */
 
@@ -122,34 +144,34 @@ public class Sweep : MonoBehaviour {
 
         direction = Quaternion.Euler(0, 0, angle - 90);
 
-        // VR part
-        //if(currentTransform. sqrMagnitude < 0.1f)
-        //{
-        //    return;
-        //}
+		// VR part
+		//if (currentTransform.sqrMagnitude < 0.1f)
+		//{
+		//	return;
+		//}
 
-        //VRangle = Mathf.Atan2(currentTransform.y, currentTransform.x) * Mathf.Rad2Deg;
+		VRangle = Mathf.Atan2(currentTransform.y, currentTransform.x) * Mathf.Rad2Deg;
 
-        //if(VRangle < 0)
-        //{
-        //    VRangle += 360;
-        //}
+		if (VRangle < 0)
+		{
+			VRangle += 360;
+		}
 
-        //VRdirection = Quaternion.Euler(0, 0, VRangle - 90);
+		VRdirection = Quaternion.Euler(0, 0, VRangle - 90);
 
-        // Debug.Log("angle = " + angle);
-    }
+		Debug.Log("angle = " + VRangle);
+	}
 
-    void DistanceTraveled()
+    void DistanceTraveled() // works
     {
         /* Calculates the distance from mouse first left press to current position */
 
         distance = Input.mousePosition - startPosition;
 
         // VR part
-        //VRdistance = trackedObject.transform.position - startTransform;
+        VRdistance = (trackedObject.transform.position - startTransform) * 100.0f;
 
-        // Debug.Log("The mouse traveled " + distance.magnitude + " pixels");
+        // Debug.Log("The mouse traveled " + VRdistance.magnitude + " pixels");
     }
 
     void SpawnBeam()
@@ -157,9 +179,9 @@ public class Sweep : MonoBehaviour {
         Rigidbody clone;
         clone = Instantiate(beam, transform.position + transform.forward * 2, direction); // Instantiates (spawns) a beam
 
-        //clone = Instantiate(beam, transform.position + transform.forward * (VRdistance.magnitude / 2), VRdirection); // VR part, not sure if works
+        clone = Instantiate(beam, transform.position + transform.forward * (VRdistance.magnitude / 2), VRdirection); // VR part, not sure if works
 
-        clone.GetComponent<Rigidbody>().velocity = velocity * transform.forward * stabilizeVelocity; // Apply force to Z axis (launches forwards)
+        clone.GetComponent<Rigidbody>().velocity = rb.maxAngularVelocity * transform.forward; // Apply force to Z axis (launches forwards)
 
         //Debug.Log("Spawned Z position " + zPosition + " and current Z position " + currentZPosition);
 
