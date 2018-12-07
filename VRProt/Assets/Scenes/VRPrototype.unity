@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.18028334, g: 0.2257134, b: 0.30692226, a: 1}
+  m_IndirectSpecularColor: {r: 0.18028378, g: 0.22571412, b: 0.30692285, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -194,7 +194,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &381798419
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -923,6 +923,20 @@ Prefab:
       propertyPath: beam
       value: 
       objectReference: {fileID: 1165227884}
+    - target: {fileID: 107946, guid: dc06161b6d97feb419f45f03b62e14b9, type: 2}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 114581399647555804, guid: dc06161b6d97feb419f45f03b62e14b9,
+        type: 2}
+      propertyPath: thisHand
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 114569486514116824, guid: dc06161b6d97feb419f45f03b62e14b9,
+        type: 2}
+      propertyPath: thisHand
+      value: 2
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: dc06161b6d97feb419f45f03b62e14b9, type: 2}
   m_IsPrefabAsset: 0
@@ -992,6 +1006,10 @@ Prefab:
       propertyPath: particle
       value: 
       objectReference: {fileID: 1165227879}
+    - target: {fileID: 1341553132078770, guid: 85efcc4a3a6d16a4ba4d7cb50f6ae7cb, type: 2}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 85efcc4a3a6d16a4ba4d7cb50f6ae7cb, type: 2}
   m_IsPrefabAsset: 0

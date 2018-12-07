@@ -8,8 +8,6 @@ public class Enemy_Behaviour : MonoBehaviour {
     public ParticleSystem particle;
     public List<ParticleCollisionEvent> collisionEvents;
 
-    public GameObject enemy;
-
     public float speed = 2.0f;
 
 
