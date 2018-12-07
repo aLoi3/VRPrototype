@@ -22,7 +22,11 @@ public class Sweep : MonoBehaviour {
     private float angle; // Angle between mouse first pressed position and current position
     private float velocity; // Speed of the mouse after being pressed
 
-	/* Variables for VR */
+    public List<ParticleCollisionEvent> collisionEvents;
+    public ParticleSystem particle;
+
+    /* Variables for VR */
+    public SteamVR_Input_Sources thisHand;
 	public GameObject trackedObject;
 	SteamVR_Behaviour_Pose trackedObj;
 	private Vector3 startTransform;
@@ -47,18 +51,19 @@ public class Sweep : MonoBehaviour {
         audioSource = GetComponent<AudioSource>();
 		trackedObj = GetComponent<SteamVR_Behaviour_Pose>();
 		rb = GetComponent<Rigidbody>();
-	}
+        collisionEvents = new List<ParticleCollisionEvent>();
+    }
 	
 	// Update is called once per frame
 	void Update ()
     {
 		/* Vive Controller Input (hopefully) */
-		if (SteamVR_Input._default.inActions.GrabPinch.GetStateDown(SteamVR_Input_Sources.Any))
+		if (SteamVR_Input._default.inActions.GrabPinch.GetStateDown(thisHand))
 		{
 			startTransform = trackedObject.transform.position;
 		}
 
-		if (SteamVR_Input._default.inActions.GrabPinch.GetState(SteamVR_Input_Sources.Any))
+		if (SteamVR_Input._default.inActions.GrabPinch.GetState(thisHand))
 		{
 			currentTransform = trackedObject.transform.position - startTransform;
 			CalculateDirection();
@@ -144,29 +149,31 @@ public class Sweep : MonoBehaviour {
 
         direction = Quaternion.Euler(0, 0, angle - 90);
 
-		// VR part
-		//if (currentTransform.sqrMagnitude < 0.1f)
-		//{
-		//	return;
-		//}
+        // VR part
+        //if (currentTransform.sqrMagnitude < 0.1f)
+        //{
+        //	return;
+        //}
 
-		//Quaternion newRotation = Quaternion.identity;
-		//newRotation.x = transform.rotation.x;
+        //Quaternion newRotation = Quaternion.identity;
+        //newRotation.x = transform.rotation.x;
 
-		//Debug.Log("newRotation.x = " + newRotation.x);
+        //Debug.Log("newRotation.x = " + newRotation.x);
 
-		//float xEuler = (newRotation.x + 1) * 180;
+        //float xEuler = (newRotation.x + 1) * 180;
 
-		//Debug.Log("xEuler: " + xEuler);
+        //Debug.Log("xEuler: " + xEuler);
 
-		VRangle = Mathf.Atan2(currentTransform.y, currentTransform.x) * Mathf.Rad2Deg;
+        //VRangle = Mathf.Atan2(currentTransform.y, currentTransform.x) * Mathf.Rad2Deg;
 
-		if (VRangle < 0)
-		{
-			VRangle += 360;
-		}
+        //if (VRangle < 0)
+        //{
+        //	VRangle += 360;
+        //}
 
-		VRdirection = Quaternion.Euler(0, 0, VRangle - 90);
+        //VRdirection = Quaternion.Euler(0, 0, VRangle - 90);
+
+        VRangle = Quaternion.FromToRotation(Vector3.up, currentTransform - startTransform).eulerAngles.z;
 
 		Debug.Log("angle = " + VRangle);
 	}
@@ -178,7 +185,7 @@ public class Sweep : MonoBehaviour {
         distance = Input.mousePosition - startPosition;
 
         // VR part
-        VRdistance = (trackedObject.transform.position - startTransform) * 100.0f;
+        VRdistance = (trackedObject.transform.position - startTransform) * 100.0f; // Delete multiplication, but multiple in IF statement in Update
 
         // Debug.Log("The mouse traveled " + VRdistance.magnitude + " pixels");
     }
