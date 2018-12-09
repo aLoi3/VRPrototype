@@ -1516,7 +1516,7 @@ AudioSource:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 144230}
-  m_Enabled: 0
+  m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 0}
@@ -1754,19 +1754,22 @@ MonoBehaviour:
   minimumDistanceInPixels: 150
   delay: 1
   stabilizeVelocity: 0.1
-  offset: 0.2
-  slash: []
   beam: {fileID: 0}
-  particle: {fileID: 0}
-  thisHand: 0
+  slash:
+  - {fileID: 8300000, guid: bf79584f9e271a84f866605af7e05733, type: 3}
+  - {fileID: 8300000, guid: 67820df5a6e6cf3448c0808c23012f29, type: 3}
+  - {fileID: 8300000, guid: ce2cb9bc6bb20e44f839174581ce8765, type: 3}
+  - {fileID: 8300000, guid: 077c6febf27fc984585d5f15ac102f60, type: 3}
+  thisHand: 2
   trackedObject: {fileID: 165334}
+  distanceMultiplier: 25
 --- !u!114 &114581399647555804
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 144230}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 9718e559cee729343b10d4801c4a6538, type: 3}
   m_Name: 
@@ -1775,9 +1778,12 @@ MonoBehaviour:
   minimumDistanceInPixels: 150
   delay: 1
   stabilizeVelocity: 0.1
-  offset: 0.2
-  slash: []
   beam: {fileID: 0}
-  particle: {fileID: 0}
-  thisHand: 0
+  slash:
+  - {fileID: 8300000, guid: bf79584f9e271a84f866605af7e05733, type: 3}
+  - {fileID: 8300000, guid: 67820df5a6e6cf3448c0808c23012f29, type: 3}
+  - {fileID: 8300000, guid: ce2cb9bc6bb20e44f839174581ce8765, type: 3}
+  - {fileID: 8300000, guid: 077c6febf27fc984585d5f15ac102f60, type: 3}
+  thisHand: 1
   trackedObject: {fileID: 1000013428287994}
+  distanceMultiplier: 25

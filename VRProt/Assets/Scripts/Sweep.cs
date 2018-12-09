@@ -6,36 +6,15 @@ using Valve.VR;
 [RequireComponent(typeof(AudioSource))]
 public class Sweep : MonoBehaviour {
 
-    public float minimumSpeed = 25f; // Minimum speed needed to spawn a beam
+    public float minimumSpeed = 5f; // Minimum speed needed to spawn a beam
     public float minimumDistanceInPixels = 150f; // Minimum distance needed to spawn a beam
     public float delay = 1.0f; // Delay for destroying a beam
     public float stabilizeVelocity = 0.1f; // Stabilizing value for spawned beam for it not to launch too fast
-    public float offset = 0.2f;
-
-    /* Variables for audio */
-    public AudioClip[] slash;
-    private AudioSource audioSource;
-    private AudioClip slashClip;
 
     public Rigidbody beam; // Game object that will spawn under some conditions
 
     private float angle; // Angle between mouse first pressed position and current position
     private float velocity; // Speed of the mouse after being pressed
-
-    public List<ParticleCollisionEvent> collisionEvents;
-    public ParticleSystem particle;
-
-    /* Variables for VR */
-    public SteamVR_Input_Sources thisHand;
-	public GameObject trackedObject;
-	SteamVR_Behaviour_Pose trackedObj;
-	private Vector3 startTransform;
-	private Vector3 currentTransform;
-	private float objectVelocity;
-	private float VRangle;
-	private Quaternion VRdirection;
-	private Vector3 VRdistance;
-	private Rigidbody rb;
 
 	private Vector3 startPosition; // Starting position of the mouse when pressed (LMB)
     private Vector3 distance; // Distance travelled after mouse left click pressed
@@ -45,13 +24,34 @@ public class Sweep : MonoBehaviour {
     
     private bool isPressed = false; // Boolean checking whether LMB is pressed  
 
+    /* Variables for audio */
+    public AudioClip[] slash;
+    private AudioSource audioSource;
+    private AudioClip slashClip;
+
+
+    /* Variables for VR */
+    public SteamVR_Input_Sources thisHand;
+    public GameObject trackedObject;
+    public float distanceMultiplier = 50.0f;
+
+    private Vector3 startTransform;
+    private Vector3 currentTransform;
+    private Vector3 VRdistance;
+
+    private float VRangle;
+
+    private Quaternion VRdirection;
+    private Rigidbody rb;
+
+    SteamVR_Behaviour_Pose trackedObj;
+
     // Use this for initialization
     void Start ()
     {
         audioSource = GetComponent<AudioSource>();
 		trackedObj = GetComponent<SteamVR_Behaviour_Pose>();
 		rb = GetComponent<Rigidbody>();
-        collisionEvents = new List<ParticleCollisionEvent>();
     }
 	
 	// Update is called once per frame
@@ -69,6 +69,16 @@ public class Sweep : MonoBehaviour {
 			CalculateDirection();
 			CalculateVelocity();
 			DistanceTraveled();
+
+            if(isPressed)
+            {
+                if(rb.maxAngularVelocity >= minimumSpeed && VRdistance.magnitude * distanceMultiplier >= minimumDistanceInPixels)
+                {
+                    UseSound();
+                    SpawnBeam();
+                    isPressed = false;
+                }
+            }
 		}
 
 		/* Mouse Input */
@@ -90,12 +100,7 @@ public class Sweep : MonoBehaviour {
             {
                 if (velocity >= minimumSpeed && distance.magnitude >= minimumDistanceInPixels)
                 {
-                    // Play a random slashing sound
-                    int index = Random.Range(0, slash.Length);
-                    slashClip = slash[index];
-                    audioSource.clip = slashClip;
-                    audioSource.Play();
-
+                    UseSound(); // Use a slash sound
                     SpawnBeam(); // Spawn a beam
                     isPressed = false; // Set it false so that beam is spawned only once after click
                 }
@@ -112,9 +117,8 @@ public class Sweep : MonoBehaviour {
 		
 		velocity = Mathf.Sqrt(Mathf.Pow(velocityX, 2) + Mathf.Pow(velocityY, 2));
 
-		// VR part
-		//var rigidbody = GetComponent<Rigidbody>();
 
+		// VR part
 		var origin = trackedObj.origin ? trackedObj.origin : trackedObj.transform.parent;
 		if (origin != null)
 		{
@@ -149,33 +153,13 @@ public class Sweep : MonoBehaviour {
 
         direction = Quaternion.Euler(0, 0, angle - 90);
 
+
         // VR part
-        //if (currentTransform.sqrMagnitude < 0.1f)
-        //{
-        //	return;
-        //}
-
-        //Quaternion newRotation = Quaternion.identity;
-        //newRotation.x = transform.rotation.x;
-
-        //Debug.Log("newRotation.x = " + newRotation.x);
-
-        //float xEuler = (newRotation.x + 1) * 180;
-
-        //Debug.Log("xEuler: " + xEuler);
-
-        //VRangle = Mathf.Atan2(currentTransform.y, currentTransform.x) * Mathf.Rad2Deg;
-
-        //if (VRangle < 0)
-        //{
-        //	VRangle += 360;
-        //}
-
-        //VRdirection = Quaternion.Euler(0, 0, VRangle - 90);
-
         VRangle = Quaternion.FromToRotation(Vector3.up, currentTransform - startTransform).eulerAngles.z;
 
-		Debug.Log("angle = " + VRangle);
+        VRdirection = Quaternion.Euler(0, 0, VRangle);
+
+		// Debug.Log("angle = " + VRangle);
 	}
 
     void DistanceTraveled() // works
@@ -184,8 +168,9 @@ public class Sweep : MonoBehaviour {
 
         distance = Input.mousePosition - startPosition;
 
+
         // VR part
-        VRdistance = (trackedObject.transform.position - startTransform) * 100.0f; // Delete multiplication, but multiple in IF statement in Update
+        VRdistance = (trackedObject.transform.position - startTransform); 
 
         // Debug.Log("The mouse traveled " + VRdistance.magnitude + " pixels");
     }
@@ -193,17 +178,26 @@ public class Sweep : MonoBehaviour {
     void SpawnBeam()
     {
         Rigidbody clone;
-        clone = Instantiate(beam, transform.position + transform.forward * 2, direction); // Instantiates (spawns) a beam
+        // clone = Instantiate(beam, transform.position + transform.forward * 2, direction); // Instantiates (spawns) a beam
+        // clone.GetComponent<Rigidbody>().velocity = rb.maxAngularVelocity * transform.forward * stabilizeVelocity;
 
-        clone = Instantiate(beam, transform.position + transform.forward * (VRdistance.magnitude / 2), VRdirection); // VR part, not sure if works
 
+        /* VR part */
+        clone = Instantiate(beam, transform.position + transform.forward * (VRdistance.magnitude / 2), VRdirection); // Instantiate beam
         clone.GetComponent<Rigidbody>().velocity = rb.maxAngularVelocity * transform.forward; // Apply force to Z axis (launches forwards)
-
-        //Debug.Log("Spawned Z position " + zPosition + " and current Z position " + currentZPosition);
 
         if (clone)
         {
             Destroy(clone.gameObject, delay); // Destroys the spawned beam
         }
+    }
+
+    void UseSound()
+    {
+        // Play a random slashing sound
+        int index = Random.Range(0, slash.Length);
+        slashClip = slash[index];
+        audioSource.clip = slashClip;
+        audioSource.Play();
     }
 }

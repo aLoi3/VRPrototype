@@ -23,7 +23,7 @@ public class Enemy_Behaviour : MonoBehaviour {
     {
         transform.LookAt(target.GetComponent<Transform>());
 
-        if(Vector3.Distance(transform.position, target.GetComponent<Transform>().position) <= 25.0f)
+        if(Vector3.Distance(transform.position, target.GetComponent<Transform>().position) <= 100.0f)
         {
             transform.position += transform.forward * speed * Time.deltaTime;
         }

@@ -21,7 +21,7 @@ GameObject:
   - component: {fileID: 4000012469850966}
   - component: {fileID: 114000013071118052}
   m_Layer: 0
-  m_Name: LeftRenderModel Slim 2
+  m_Name: LeftSword
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -51,7 +51,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 847a4fd831847974bb8d16b469b643e3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  handPrefab: {fileID: 1000011796137152, guid: 9dfef9e7ed3299648a58ee7c687cb732, type: 2}
+  handPrefab: {fileID: 119738, guid: 68e12fbe32672a74fb0b5e2a021e1343, type: 2}
   displayHandByDefault: 1
   controllerPrefab: {fileID: 1000011460529826, guid: e789c2cc0c98a4c4198a4033fb8ccf96,
     type: 2}
