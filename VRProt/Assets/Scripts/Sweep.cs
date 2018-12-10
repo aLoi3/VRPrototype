@@ -6,8 +6,8 @@ using Valve.VR;
 [RequireComponent(typeof(AudioSource))]
 public class Sweep : MonoBehaviour {
 
-    public float minimumSpeed = 5f; // Minimum speed needed to spawn a beam
-    public float minimumDistanceInPixels = 150f; // Minimum distance needed to spawn a beam
+    public float minimumSpeed = 2f; // Minimum speed needed to spawn a beam
+    public float minimumDistanceInPixels = 30f; // Minimum distance needed to spawn a beam
     public float delay = 1.0f; // Delay for destroying a beam
     public float stabilizeVelocity = 0.1f; // Stabilizing value for spawned beam for it not to launch too fast
 
@@ -57,10 +57,12 @@ public class Sweep : MonoBehaviour {
 	// Update is called once per frame
 	void Update ()
     {
-		/* Vive Controller Input (hopefully) */
+		/* Vive Controller Input */
 		if (SteamVR_Input._default.inActions.GrabPinch.GetStateDown(thisHand))
 		{
 			startTransform = trackedObject.transform.position;
+
+			isPressed = true;
 		}
 
 		if (SteamVR_Input._default.inActions.GrabPinch.GetState(thisHand))
@@ -72,7 +74,7 @@ public class Sweep : MonoBehaviour {
 
             if(isPressed)
             {
-                if(rb.maxAngularVelocity >= minimumSpeed && VRdistance.magnitude * distanceMultiplier >= minimumDistanceInPixels)
+                if(rb.maxAngularVelocity >= minimumSpeed && (VRdistance.magnitude * distanceMultiplier) >= minimumDistanceInPixels)
                 {
                     UseSound();
                     SpawnBeam();
@@ -81,31 +83,33 @@ public class Sweep : MonoBehaviour {
             }
 		}
 
+		//Debug.Log(startTransform + " and " + currentTransform);
+
 		/* Mouse Input */
 		if (Input.GetMouseButtonDown(0))
-        {
-            startPosition = Input.mousePosition; // Sets the starting mouse position after left mouse button has been pressed
+		{
+			startPosition = Input.mousePosition; // Sets the starting mouse position after left mouse button has been pressed
 
-            isPressed = true; // Set to true after LMB has been pressed
-        }
+			isPressed = true; // Set to true after LMB has been pressed
+		}
 
-		if(Input.GetMouseButton(0))
-        {
-            mouseDelta = Input.mousePosition - startPosition; // Calculates current mouse position each frame
-            CalculateDirection(); 
-            CalculateVelocity();
-            DistanceTraveled();
+		if (Input.GetMouseButton(0))
+		{
+			mouseDelta = Input.mousePosition - startPosition; // Calculates current mouse position each frame
+			CalculateDirection();
+			CalculateVelocity();
+			DistanceTraveled();
 
-            if (isPressed)
-            {
-                if (velocity >= minimumSpeed && distance.magnitude >= minimumDistanceInPixels)
-                {
-                    UseSound(); // Use a slash sound
-                    SpawnBeam(); // Spawn a beam
-                    isPressed = false; // Set it false so that beam is spawned only once after click
-                }
-            }
-        }
+			if (isPressed)
+			{
+				if (velocity >= minimumSpeed && distance.magnitude >= minimumDistanceInPixels)
+				{
+					UseSound(); // Use a slash sound
+					SpawnBeam(); // Spawn a beam
+					isPressed = false; // Set it false so that beam is spawned only once after click
+				}
+			}
+		}
 	}
 
     void CalculateVelocity() // works
@@ -133,7 +137,7 @@ public class Sweep : MonoBehaviour {
 
 		rb.maxAngularVelocity = rb.angularVelocity.magnitude;
 		
-		// Debug.Log("velocity = " + rb.maxAngularVelocity);
+		//Debug.Log("velocity = " + rb.maxAngularVelocity);
 	}
 
 	void CalculateDirection()
@@ -159,7 +163,7 @@ public class Sweep : MonoBehaviour {
 
         VRdirection = Quaternion.Euler(0, 0, VRangle);
 
-		// Debug.Log("angle = " + VRangle);
+		//Debug.Log("angle = " + VRangle);
 	}
 
     void DistanceTraveled() // works
@@ -172,12 +176,14 @@ public class Sweep : MonoBehaviour {
         // VR part
         VRdistance = (trackedObject.transform.position - startTransform); 
 
-        // Debug.Log("The mouse traveled " + VRdistance.magnitude + " pixels");
+        //Debug.Log("The mouse traveled " + VRdistance.magnitude * distanceMultiplier + " pixels");
     }
 
     void SpawnBeam()
     {
         Rigidbody clone;
+
+		/* Spawn using mouse */
         // clone = Instantiate(beam, transform.position + transform.forward * 2, direction); // Instantiates (spawns) a beam
         // clone.GetComponent<Rigidbody>().velocity = rb.maxAngularVelocity * transform.forward * stabilizeVelocity;
 
